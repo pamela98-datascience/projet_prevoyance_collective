@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Synthèse — Prévoyance Collective</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy:   #1F3864;
+    --blue:   #2E75B6;
+    --green:  #4E9A51;
+    --orange: #C55A11;
+    --light:  #EEF3FB;
+    --white:  #FFFFFF;
+    --grey:   #F4F6FA;
+    --text:   #1A2340;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--navy);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 24px;
+  }
+
+  .slide {
+    width: 1100px;
+    min-height: 680px;
+    background: var(--white);
+    border-radius: 16px;
+    overflow: hidden;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.45);
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--navy);
+    padding: 28px 40px 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .header-left h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.85rem;
+    color: var(--white);
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+  }
+  .header-left h1 em { color: #7FB3E8; font-style: italic; }
+  .header-left .subtitle {
+    margin-top: 6px;
+    font-size: 0.82rem;
+    color: #8BAECB;
+    font-weight: 300;
+    letter-spacing: 0.4px;
+  }
+  .header-right {
+    text-align: right;
+    font-size: 0.75rem;
+    color: #6A8FB5;
+    line-height: 1.6;
+  }
+  .header-right strong { color: #A8C8E8; font-weight: 500; }
+
+  /* ── BODY ── */
+  .body {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 1px;
+    background: #DDE5F0;
+    padding: 1px;
+  }
+
+  .panel {
+    background: var(--white);
+    padding: 22px 26px;
+  }
+
+  .panel-title {
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--blue);
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--light);
+  }
+
+  /* KPIs panel */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .kpi {
+    background: var(--grey);
+    border-radius: 10px;
+    padding: 12px 14px;
+    border-left: 3px solid var(--navy);
+  }
+  .kpi .val {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.55rem;
+    color: var(--navy);
+    line-height: 1;
+  }
+  .kpi .lbl {
+    font-size: 0.68rem;
+    color: #666;
+    margin-top: 3px;
+    font-weight: 400;
+  }
+  .kpi.highlight { border-left-color: var(--green); }
+  .kpi.highlight .val { color: var(--green); }
+  .kpi.warn { border-left-color: var(--orange); }
+  .kpi.warn .val { color: var(--orange); }
+
+  /* CR panel */
+  .cr-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+  .cr-table th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 6px 8px;
+    text-align: right;
+    font-weight: 500;
+    font-size: 0.70rem;
+  }
+  .cr-table th:first-child { text-align: left; }
+  .cr-table td {
+    padding: 6px 8px;
+    text-align: right;
+    border-bottom: 1px solid var(--light);
+    color: var(--text);
+  }
+  .cr-table td:first-child { text-align: left; font-weight: 500; }
+  .cr-table tr:nth-child(even) td { background: var(--grey); }
+  .cr-table tr.total td {
+    background: var(--navy);
+    color: var(--white);
+    font-weight: 600;
+    border-bottom: none;
+  }
+  .sp-good  { color: var(--green)  !important; font-weight: 700 !important; }
+  .sp-ok    { color: #C49600 !important; font-weight: 700 !important; }
+  .sp-warn  { color: var(--orange) !important; font-weight: 700 !important; }
+
+  /* Bar chart panel */
+  .bar-chart { display: flex; flex-direction: column; gap: 12px; margin-top: 4px; }
+  .bar-row { display: flex; flex-direction: column; gap: 3px; }
+  .bar-label {
+    font-size: 0.70rem;
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    justify-content: space-between;
+  }
+  .bar-label .amounts { font-weight: 400; color: #666; font-size: 0.65rem; }
+  .bar-track {
+    height: 16px;
+    background: var(--grey);
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
+    position: relative;
+  }
+  .bar-prime  { background: var(--navy); height: 100%; border-radius: 4px 0 0 4px; }
+  .bar-sinist { background: var(--orange); height: 100%; }
+  .bar-result { background: var(--green); height: 100%; border-radius: 0 4px 4px 0; }
+  .bar-legend {
+    display: flex;
+    gap: 14px;
+    margin-top: 8px;
+    font-size: 0.65rem;
+    color: #555;
+  }
+  .bar-legend span { display: flex; align-items: center; gap: 4px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
+  /* Monte Carlo panel */
+  .mc-dist {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 70px;
+    margin: 10px 0;
+    padding: 0 4px;
+  }
+  .mc-bin {
+    flex: 1;
+    border-radius: 2px 2px 0 0;
+    min-width: 4px;
+  }
+  .mc-axis {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.60rem;
+    color: #888;
+    padding: 2px 4px 0;
+  }
+  .mc-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .mc-stat {
+    background: var(--grey);
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-size: 0.68rem;
+  }
+  .mc-stat strong { color: var(--navy); display: block; font-size: 0.88rem; }
+
+  /* Formulas panel */
+  .formula-block {
+    background: var(--grey);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    border-left: 3px solid var(--blue);
+  }
+  .formula-block .gar-name {
+    font-weight: 600;
+    font-size: 0.75rem;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+  .formula {
+    font-family: 'Courier New', monospace;
+    font-size: 0.70rem;
+    color: #333;
+    line-height: 1.5;
+  }
+  .formula .var { color: var(--blue); font-weight: 700; }
+  .formula .op  { color: var(--orange); }
+
+  /* Renouvellement */
+  .renouv {
+    background: linear-gradient(135deg, #E8F3E8, #F0FAF0);
+    border: 1.5px solid var(--green);
+    border-radius: 10px;
+    padding: 12px 16px;
+    text-align: center;
+    font-size: 0.78rem;
+    color: #2A6B2A;
+  }
+  .renouv strong { display: block; font-size: 1.1rem; margin-bottom: 2px; }
+
+  /* span full col */
+  .span-full { grid-column: 1 / -1; }
+
+  /* ── FOOTER ── */
+  .footer {
+    background: var(--navy);
+    padding: 12px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.70rem;
+    color: #6A8FB5;
+  }
+  .footer strong { color: #A8C8E8; font-weight: 500; }
+  .footer .tags span {
+    background: rgba(255,255,255,0.08);
+    color: #8BAECB;
+    padding: 3px 8px;
+    border-radius: 20px;
+    margin-left: 4px;
+    font-size: 0.63rem;
+  }
+</style>
+</head>
+<body>
+<div class="slide">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-left">
+      <h1>Tarification &amp; Pilotage<br><em>Prévoyance Collective</em></h1>
+      <div class="subtitle">Modélisation actuarielle · 3 garanties · 500 salariés · Exercice 2026</div>
+    </div>
+    <div class="header-right">
+      <strong>Paméla Fagla</strong><br>
+      M1 Actuariat · ISUP Sorbonne Université<br>
+      Python · Tables TD 88-90 · Monte Carlo
+    </div>
+  </header>
+
+  <!-- BODY -->
+  <div class="body">
+
+    <!-- Panel 1 : KPIs -->
+    <div class="panel">
+      <div class="panel-title">Indicateurs clés du régime</div>
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="val">500</div>
+          <div class="lbl">Salariés assurés</div>
+        </div>
+        <div class="kpi">
+          <div class="val">4,35 %</div>
+          <div class="lbl">Taux de cotisation<br>% masse salariale</div>
+        </div>
+        <div class="kpi highlight">
+          <div class="val">80,4 %</div>
+          <div class="lbl">Ratio S/P réalisé<br><em style="font-size:.60rem">théorique : 82,0 %</em></div>
+        </div>
+        <div class="kpi highlight">
+          <div class="val">+176 k€</div>
+          <div class="lbl">Résultat technique<br>exercice réalisé</div>
+        </div>
+        <div class="kpi" style="grid-column:1/-1;">
+          <div class="val" style="font-size:1.1rem">1 800 €/an</div>
+          <div class="lbl">Prime commerciale moyenne par salarié</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel 2 : Compte de résultat -->
+    <div class="panel">
+      <div class="panel-title">Compte de résultat technique</div>
+      <table class="cr-table">
+        <thead>
+          <tr>
+            <th>Garantie</th>
+            <th>Primes (k€)</th>
+            <th>Sinistres (k€)</th>
+            <th>S/P</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Décès</td>
+            <td>199</td>
+            <td>194</td>
+            <td class="sp-ok">97,2 %</td>
+          </tr>
+          <tr>
+            <td>IJ</td>
+            <td>116</td>
+            <td>104</td>
+            <td class="sp-ok">89,5 %</td>
+          </tr>
+          <tr>
+            <td>Invalidité</td>
+            <td>584</td>
+            <td>426</td>
+            <td class="sp-good">72,9 %</td>
+          </tr>
+          <tr class="total">
+            <td>TOTAL</td>
+            <td>900</td>
+            <td>724</td>
+            <td class="sp-good">80,4 %</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="margin-top:14px;">
+        <div class="renouv">
+          <strong>✅ Tarif équilibré</strong>
+          Pas de revalorisation requise à ce stade
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel 3 : Formules -->
+    <div class="panel">
+      <div class="panel-title">Formules actuarielles</div>
+
+      <div class="formula-block">
+        <div class="gar-name">🏴 Garantie Décès</div>
+        <div class="formula">
+          <span class="var">pp</span> <span class="op">=</span> <span class="var">q<sub>x</sub></span> × <span class="var">k</span> × <span class="var">SA</span><br>
+          <span style="color:#888">TD 88-90 · capital = 3 × salaire annuel</span>
+        </div>
+      </div>
+
+      <div class="formula-block">
+        <div class="gar-name">🏥 Garantie IJ (Incapacité Temporaire)</div>
+        <div class="formula">
+          <span class="var">pp</span> <span class="op">=</span> <span class="var">p<sub>arrêt</sub></span> × <span class="var">D<sub>net</sub></span> × <span class="var">IJ<sub>jour</sub></span><br>
+          <span style="color:#888">Franchise 8j · IJ = 70 % sal. brut journalier</span>
+        </div>
+      </div>
+
+      <div class="formula-block">
+        <div class="gar-name">♿ Garantie Invalidité IPT</div>
+        <div class="formula">
+          <span class="var">pp</span> <span class="op">=</span> <span class="var">p<sub>inv</sub></span> × <span class="var">Rente</span> × <span class="var">ä<sub>65-x</sub></span><br>
+          <span class="var" style="font-size:.65rem">ä<sub>n</sub> = (1−v<sup>n</sup>)/i &nbsp;·&nbsp; i = 3,5 % (RFR EIOPA)</span>
+        </div>
+      </div>
+
+      <div style="font-size:0.68rem; color:#555; margin-top:6px;">
+        <strong>Prime commerciale :</strong>
+        p<sub>c</sub> = p<sub>p</sub> / (1 − π) &nbsp;·&nbsp;
+        Chargements : Décès 12 % · IJ 18 % · Inv. 20 %
+      </div>
+    </div>
+
+    <!-- Panel 4 : Bar chart primes vs sinistres -->
+    <div class="panel">
+      <div class="panel-title">Primes vs Sinistres par garantie</div>
+      <div class="bar-chart">
+        <!-- each bar: total width = 100% = total pc, prime bar + sinist bar + result bar -->
+        <div class="bar-row">
+          <div class="bar-label">
+            <span>Décès</span>
+            <span class="amounts">199 k€ primes · 194 k€ sinistres</span>
+          </div>
+          <div class="bar-track">
+            <!-- sinistres = 97.2% of primes → bar = sinistres/primes -->
+            <div class="bar-sinist" style="width:97.2%;"></div>
+            <div class="bar-result" style="width:2.8%;"></div>
+          </div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">
+            <span>IJ</span>
+            <span class="amounts">116 k€ primes · 104 k€ sinistres</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-sinist" style="width:89.5%;"></div>
+            <div class="bar-result" style="width:10.5%;"></div>
+          </div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">
+            <span>Invalidité</span>
+            <span class="amounts">584 k€ primes · 426 k€ sinistres</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-sinist" style="width:72.9%;"></div>
+            <div class="bar-result" style="width:27.1%;"></div>
+          </div>
+        </div>
+        <div class="bar-row" style="margin-top:4px;">
+          <div class="bar-label">
+            <span style="font-weight:700;color:var(--navy)">TOTAL</span>
+            <span class="amounts">900 k€ primes · 724 k€ sinistres</span>
+          </div>
+          <div class="bar-track" style="height:20px;">
+            <div class="bar-sinist" style="width:80.4%;"></div>
+            <div class="bar-result" style="width:19.6%;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="bar-legend">
+        <span><span class="dot" style="background:var(--orange)"></span>Sinistres</span>
+        <span><span class="dot" style="background:var(--green)"></span>Résultat (marge)</span>
+      </div>
+    </div>
+
+    <!-- Panel 5 : Monte Carlo -->
+    <div class="panel">
+      <div class="panel-title">Volatilité S/P — Monte Carlo 200 simulations</div>
+
+      <!-- Simulated histogram (approximate distribution) -->
+      <div class="mc-dist" id="mcDist">
+        <!-- bins générés via JS ci-dessous -->
+      </div>
+      <div class="mc-axis">
+        <span>0 %</span><span>50 %</span><span>100 %</span><span>150 %</span><span>200 %+</span>
+      </div>
+
+      <div class="mc-stats">
+        <div class="mc-stat"><strong>77 %</strong>S/P moyen</div>
+        <div class="mc-stat"><strong>65 %</strong>S/P médian</div>
+        <div class="mc-stat"><strong>20 % / 197 %</strong>P5 / P95</div>
+        <div class="mc-stat"><strong>21 %</strong>Années déficitaires</div>
+      </div>
+
+      <div style="font-size:0.63rem; color:#666; margin-top:8px; border-top:1px solid var(--light); padding-top:6px;">
+        📌 Forte volatilité sur 500 salariés → <strong>réassurance stop-loss recommandée</strong>
+        pour les régimes de PME (1 cas d'invalidité = ~75 k€ de charge)
+      </div>
+    </div>
+
+    <!-- Panel 6 : Limites & perspectives -->
+    <div class="panel">
+      <div class="panel-title">Limites &amp; perspectives</div>
+      <div style="font-size:0.72rem; color:var(--text); line-height:1.65;">
+        <div style="margin-bottom:8px;">
+          <strong style="color:var(--navy);">Tables de morbidité</strong><br>
+          Hypothèses simplifiées CNAM. En pratique : données BCAC mutualisées + 
+          expérience propre du portefeuille.
+        </div>
+        <div style="margin-bottom:8px;">
+          <strong style="color:var(--navy);">Corrélation garanties</strong><br>
+          Le modèle suppose indépendance IJ / Invalidité. 
+          En réalité, les longs arrêts précèdent souvent l'invalidité.
+        </div>
+        <div style="margin-bottom:8px;">
+          <strong style="color:var(--navy);">Sensibilité au taux technique</strong><br>
+          ↑ taux d'actualisation → ↓ valeur de ä<sub>65-x</sub> → ↓ provisions invalidité.
+        </div>
+        <div>
+          <strong style="color:var(--navy);">Extension possible</strong><br>
+          Modélisation multi-états (actif → arrêt → invalide → décès) via matrices de transition.
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /body -->
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div>
+      <strong>Paméla Fagla</strong> &nbsp;·&nbsp; M1 Actuariat ISUP, Sorbonne Université
+      &nbsp;·&nbsp; pamahoussifagla@gmail.com
+    </div>
+    <div class="tags">
+      <span>Python</span>
+      <span>TD 88-90</span>
+      <span>Prévoyance Collective</span>
+      <span>BCAC / CNAM</span>
+      <span>ANI 2013</span>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+// Générer un histogramme Monte Carlo approximatif
+const container = document.getElementById('mcDist');
+// Distribution approximative basée sur les résultats du modèle
+// S/P values binned into ~30 buckets from 0% to 220%
+const bins = [
+  2, 3, 5, 8, 10, 12, 14, 13, 11, 10,  // 0-70%
+  9, 8, 7, 6, 5, 5, 4, 4, 3, 3,         // 70-140%
+  3, 3, 2, 2, 2, 2, 2, 2, 2, 3           // 140-220%
+];
+const maxBin = Math.max(...bins);
+const deficitStart = 20; // bin index where S/P > 100%
+
+bins.forEach((h, i) => {
+  const div = document.createElement('div');
+  div.className = 'mc-bin';
+  const pct = (h / maxBin * 100).toFixed(1);
+  div.style.height = pct + '%';
+  // Color zones
+  if (i < 10) div.style.background = '#4E9A51';           // sain < 75%
+  else if (i < 13) div.style.background = '#C49600';      // ok 75-90%
+  else if (i < deficitStart) div.style.background = '#C55A11'; // tension 90-100%
+  else div.style.background = '#8B1A1A';                  // déficit > 100%
+  container.appendChild(div);
+});
+</script>
+</body>
+</html>
