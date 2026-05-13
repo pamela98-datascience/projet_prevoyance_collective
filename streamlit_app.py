@@ -368,20 +368,6 @@ with tab3:
     </div>
     """, unsafe_allow_html=True)
     
-    for q, a in qas:
-        with st.expander(f"❓ {q}"):
-            st.markdown(f"**Réponse :**\n\n{a}")
-    
-    st.markdown("---")
-    st.markdown(f"""
-    <div style='background:#F0F4F8; padding:16px; border-radius:8px; font-size:0.85rem;'>
-    <b>📌 Limites à mentionner spontanément en entretien :</b><br>
-    1. Tables de morbidité simplifiées (données BCAC propriétaires en pratique)<br>
-    2. Indépendance des garanties supposée (IJ précède souvent l'invalidité)<br>
-    3. Pas de modélisation des rachats / résiliations<br>
-    4. Taux technique fixe — sensible aux évolutions de taux (impact sur ä_{{65-x}})
-    </div>
-    """, unsafe_allow_html=True)
 
 # Footer
 st.markdown("---")
