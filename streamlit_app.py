@@ -121,7 +121,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ── Tabs ───────────────────────────────────────────────────────
-tab1, tab2, tab3, tab4 = st.tabs([
+tab1, tab2, tab3 = st.tabs([
     "📋 Compte de Résultat",
     "💰 Tarification",
     "🎲 Monte Carlo",
