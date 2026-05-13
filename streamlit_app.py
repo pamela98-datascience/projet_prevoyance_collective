@@ -125,7 +125,6 @@ tab1, tab2, tab3, tab4 = st.tabs([
     "📋 Compte de Résultat",
     "💰 Tarification",
     "🎲 Monte Carlo",
-    "📚 Guide Entretien"
 ])
 
 # ═══════════════════════════════════════════════════════════════
@@ -368,56 +367,6 @@ with tab3:
     (plafond de sinistres pris en charge par le réassureur au-delà d'un seuil = retention).
     </div>
     """, unsafe_allow_html=True)
-
-# ═══════════════════════════════════════════════════════════════
-# TAB 4 : GUIDE ENTRETIEN
-# ═══════════════════════════════════════════════════════════════
-with tab4:
-    st.markdown('<div class="section-title">🎯 Questions d\'entretien — Réponses clés</div>', unsafe_allow_html=True)
-    
-    qas = [
-        ("Qu'est-ce que le ratio S/P et comment l'interprétez-vous sur ce régime ?",
-         f"""Le ratio sinistres/primes mesure la part des primes utilisée pour payer les sinistres.
-Sur ce régime, le S/P théorique est {cr_t['Total']['ratio_sp']:.1%} — le tarif est calibré pour qu'en espérance,
-{cr_t['Total']['ratio_sp']*100:.0f}% des primes couvrent les sinistres et {(1-cr_t['Total']['ratio_sp'])*100:.0f}% 
-constituent la marge de l'assureur (frais de gestion, acquisition, profit).
-L'exercice réalisé montre un S/P de {cr_r['Total']['ratio_sp']:.1%} — légèrement
-{"meilleur" if cr_r['Total']['ratio_sp'] < cr_t['Total']['ratio_sp'] else "moins bon"} que l'attendu, 
-ce qui illustre la volatilité naturelle sur un portefeuille de {n_sal} salariés."""),
-        
-        ("Comment est calculée la prime pure de la garantie invalidité ?",
-         f"""Prime pure (invalidité) = p_inv(x) × Rente_annuelle × ä_{{65-x}}
-
-- p_inv(x) : probabilité de basculer en invalidité 2ème/3ème catégorie dans l'année
-  (ex: {tar['p_inv'].mean()*1000:.1f}‰ en moyenne sur ce portefeuille)
-- Rente_annuelle = {rente_inv*100:.0f}% × salaire annuel brut
-- ä_{{65-x}} : valeur actualisée d'une rente certaine jusqu'à 65 ans, au taux technique 3.5%
-  (formule : (1-v^n)/i, v=1/(1+3.5%), n=65-âge_assuré)
-
-Sur ce portefeuille : prime pure invalide moyenne = {tar['pp_invalidite'].mean():,.0f}€/an, 
-soit {tar['pp_invalidite'].sum()/tar['pp_totale'].sum()*100:.0f}% de la prime pure totale."""),
-        
-        ("Pourquoi la volatilité du S/P est-elle plus élevée pour les petites entreprises ?",
-         f"""Par la loi des grands nombres : sur un grand portefeuille, la sinistralité réalisée
-converge vers la sinistralité attendue (=primes pures). Sur {n_sal} salariés, un seul cas
-d'invalidité représente ~{1/max(tar['p_inv'].mean()*n_sal, 0.01):.0f}× la probabilité attendue.
-La simulation Monte Carlo confirme : l'écart-type du S/P est de {mc['sp_total'].std():.0%}
-sur ce portefeuille de {n_sal} assurés.
-Solution pratique : réassurance stop-loss (le réassureur prend en charge 
-la sinistralité au-delà d'un seuil, ex: S/P > 100%)."""),
-        
-        ("Comment proposez-vous le tarif de renouvellement à l'entreprise ?",
-         f"""En 3 étapes :
-1. Calcul du S/P réalisé sur l'exercice écoulé : {cr_r['Total']['ratio_sp']:.1%}
-2. Comparaison au S/P technique cible du contrat : {cr_t['Total']['ratio_sp']:.1%}
-3. Facteur d'ajustement = S/P_réel / S/P_cible × (1 + marge de sécurité)
-
-Résultat : {rv['interpretation']}
-
-En pratique, le renouvellement s'accompagne aussi d'une analyse de la structure du régime
-(composition démographique, sinistres atypiques à exclure), d'une comparaison aux données 
-de portefeuille de l'assureur et d'une proposition argumentée à la DRH."""),
-    ]
     
     for q, a in qas:
         with st.expander(f"❓ {q}"):
